@@ -12,7 +12,6 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
-
 	"time"
 )
 
@@ -79,8 +78,8 @@ func New(filename string) (*Rkv, error) {
 
 // Reopen KV store.
 func (kv *Rkv) Reopen() error {
-    _, err := kv.open()
-    return err
+	_, err := kv.open()
+	return err
 }
 
 // Close the key-value store.
@@ -163,7 +162,7 @@ func (kv *Rkv) PutForDays(key string, value interface{}, days int32) error {
 		return err
 	}
 
-    seconds := time.Now().Unix()
+	seconds := time.Now().Unix()
 	futureDay := int32(seconds/86400) + days
 	return kv.keydir.writeTo(kv.activeFile, key, bytes, futureDay)
 }
@@ -203,8 +202,8 @@ func (kv *Rkv) GetBytes(key string) ([]byte, error) {
 	kde := kv.keydir.keys[key]
 	if kde == nil {
 		return nil, ErrKeyNotFound
-	} 
-    return kde.readValue()		
+	}
+	return kde.readValue()
 }
 
 // Delete specific key.
@@ -232,18 +231,18 @@ func (kv *Rkv) DeleteAllKeys(with string) error {
 func (kv *Rkv) Iterator(with string) <-chan string {
 	kv.isReady()
 	iter := make(chan string, 1)
-    go func() {
-    	for key, _ := range kv.keydir.keys {
-    		if with == "" || strings.Contains(key, with) {
-    			iter <- key
-    		}
-    	}
-        close(iter)
-    }()
+	go func() {
+		for key, _ := range kv.keydir.keys {
+			if with == "" || strings.Contains(key, with) {
+				iter <- key
+			}
+		}
+		close(iter)
+	}()
 	return iter
 }
 
-// GetKeys returns limited number of keys matching criterio, if limit is 
+// GetKeys returns limited number of keys matching criterio, if limit is
 // negative then returns all.
 func (kv *Rkv) GetKeys(with string, limit int) []string {
 	kv.isReady()
@@ -312,7 +311,7 @@ func (kv *Rkv) ExportJSON(w io.Writer) error {
 // ExportKeysJSON export keys data from KV store as mixed JSON.
 // Will return KeyNotFound error if can not find such key in datastore.
 func (kv *Rkv) ExportKeysJSON(w io.Writer, with string) error {
-	arr := kv.GetKeys(with, -1)	
+	arr := kv.GetKeys(with, -1)
 	return kv.exportKeys(w, arr)
 }
 

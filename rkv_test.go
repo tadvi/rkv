@@ -12,29 +12,29 @@ const (
 )
 
 func TestRkv(t *testing.T) {
-    var kv Interface
-    
-    for _, fn := range []func(t *testing.T) Interface { Open, OpenSafe } {
-        kv = fn(t)
-        Close(t, kv)
+	var kv Interface
 
-        kv = fn(t)
-        ExportImport(t, kv)
+	for _, fn := range []func(t *testing.T) Interface{Open, OpenSafe} {
+		kv = fn(t)
+		Close(t, kv)
 
-        kv = fn(t)
-        Append(t, kv)
+		kv = fn(t)
+		ExportImport(t, kv)
 
-        kv = fn(t)
-        Fetch(t, kv)
-    }
+		kv = fn(t)
+		Append(t, kv)
 
-    // test only Rkv specific functions
-    rkvdb := Open(t).(*Rkv)
-    Iterator(t, rkvdb)
+		kv = fn(t)
+		Fetch(t, kv)
+	}
+
+	// test only Rkv specific functions
+	rkvdb := Open(t).(*Rkv)
+	Iterator(t, rkvdb)
 }
 
 func Open(t *testing.T) Interface {
-    kv, err := New(testdb)
+	kv, err := New(testdb)
 	if err != nil {
 		t.Fatal("Can not open database file")
 	}
@@ -42,7 +42,7 @@ func Open(t *testing.T) Interface {
 }
 
 func OpenSafe(t *testing.T) Interface {
-    kv, err := NewSafe(testdb)
+	kv, err := NewSafe(testdb)
 	if err != nil {
 		t.Fatal("Can not open database file")
 	}
@@ -61,7 +61,7 @@ func Append(t *testing.T, kv Interface) {
 		Pos  int
 	}
 
-    var err error
+	var err error
 	total := 10
 	for i := 0; i < total; i++ {
 		data1 := Mytype{Name: "one", Pos: 1}
@@ -119,7 +119,7 @@ func ExportImport(t *testing.T, kv Interface) {
 		Pos  int
 	}
 
-    var err error
+	var err error
 	total := 10
 	for i := 0; i < total; i++ {
 		data1 := Mytype{Name: "one", Pos: 1}
@@ -184,7 +184,7 @@ func ExportImport(t *testing.T, kv Interface) {
 }
 
 func Fetch(t *testing.T, kv Interface) {
-    var err error
+	var err error
 	type Mytype struct {
 		Name string
 		Pos  int
@@ -217,7 +217,7 @@ func Fetch(t *testing.T, kv Interface) {
 	kv.Close()
 
 	kv.Reopen()
-	arr := kv.GetKeys("", -1)	
+	arr := kv.GetKeys("", -1)
 	count := 0
 	for _ = range arr {
 		count += 1
@@ -225,23 +225,23 @@ func Fetch(t *testing.T, kv Interface) {
 	if count != total*3 {
 		t.Error("GetKeys count is wrong. Should be", total*3, "Found", count)
 	}
-    
+
 	kv.Close()
 	os.Remove(testdb)
 }
 
 func Iterator(t *testing.T, kv *Rkv) {
-    var err error
+	var err error
 	type Mytype struct {
-		Name string
-        LastName string
-		Pos  int
+		Name     string
+		LastName string
+		Pos      int
 	}
 
 	total := 10
 	for i := 0; i < total; i++ {
 		data1 := Mytype{Name: "one", LastName: "bob", Pos: 1}
-		data2 := Mytype{Name: "two", LastName: "chuck" , Pos: 2}
+		data2 := Mytype{Name: "two", LastName: "chuck", Pos: 2}
 		data3 := Mytype{Name: "three", LastName: "norris", Pos: 3}
 
 		key1 := "key1_" + strconv.Itoa(i)
@@ -267,20 +267,20 @@ func Iterator(t *testing.T, kv *Rkv) {
 	kv.Reopen()
 	count := 0
 	for key := range kv.Iterator("") {
-        count += 1
-        v := Mytype{} 
-        err := kv.Get(key, &v)
-        if err != nil {
-            t.Errorf("Error while iterating %q", err.Error())
-        }
-        if !(v.Pos > 0 && v.Pos < 4) {
-            t.Errorf("Pos member has to be between 1 and 3 inclusive")
-        } 
-    }
-    if count != total * 3 {
-	   t.Error("Iterator count is wrong. Should be", total*3, "Found", count)
-    }    
+		count += 1
+		v := Mytype{}
+		err := kv.Get(key, &v)
+		if err != nil {
+			t.Errorf("Error while iterating %q", err.Error())
+		}
+		if !(v.Pos > 0 && v.Pos < 4) {
+			t.Errorf("Pos member has to be between 1 and 3 inclusive")
+		}
+	}
+	if count != total*3 {
+		t.Error("Iterator count is wrong. Should be", total*3, "Found", count)
+	}
 
 	kv.Close()
-	os.Remove(testdb)   
+	os.Remove(testdb)
 }
