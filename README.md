@@ -63,3 +63,9 @@ Basic usage:
     	}
     }
 
+## TODO
+
+* Change to use RWMutex instead of Mutex 
+* Add better iteration techniques
+* Add more test cases
+
