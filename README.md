@@ -63,6 +63,28 @@ Basic usage:
     	}
     }
 
+## Use rkv tool
+
+Use rkv tool to export or import data.
+Exported data is in JSON format. This makes it easier to move data around 
+since so many other tools talk JSON.
+
+You can also compact database files with rkv tool.
+
+Basic usage:
+
+$ rkv -c test.kv > test.json
+
+This will compact database and export to JSON.
+
+$ rkv test.kv > test.json 
+
+This simply exports database
+
+$ rkv test.kv < test.json
+
+Imports exported database
+
 ## TODO
 
 * Change to use RWMutex instead of Mutex 
