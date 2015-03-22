@@ -1,6 +1,6 @@
 # Rkv - reliable kv
 
-Rkv - embeddable KV database in go (golang). 
+Rkv - embeddable KV database in Go (golang). 
 
 * Based on Riak bitcast format
 * Minimalistic design

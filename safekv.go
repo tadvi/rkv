@@ -8,8 +8,12 @@ import (
 // SafeRkv wraps Rkv to provide goroutine safe access to KV store.
 type SafeRkv struct {
 	Rkv
-	mu sync.Mutex // mutex lock, only one goroutine can access KV datastore at one time
+    // mutex lock, only one goroutine can access KV datastore at one time
+	mu sync.Mutex
 }
+
+// Make sure SafeRkv implements our common Interface.
+var _ Interface = (*SafeRkv)(nil)
 
 // NewSafe opens or creates new Rkv.
 func NewSafe(filename string) (*SafeRkv, error) {

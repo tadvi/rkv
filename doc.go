@@ -16,7 +16,7 @@
     We use mostly same format but diverge in few aspects:
     1. If []byte value contains no data and is empty array, then it is deleted key, no data.
     2. tstamp contains days or 0. If tstamp is not 0 and it is less than todays day, key record has expired.
-        Use PutDays to take advantage of automatic record expiration.
+        Use PutForDays to take advantage of automatic record expiration.
     3. Compact and AutoCompact reads database and compacts it.
     4. Internally structs stored as JSON.
 

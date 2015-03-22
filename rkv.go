@@ -44,6 +44,7 @@ type Rkv struct {
 	LenKeys   int     // number of keys = alive
 }
 
+// Make sure Rkv implements our common Interface
 var _ Interface = (*Rkv)(nil)
 
 // GFile wrap a os.file and provide some convenient methods.
@@ -148,7 +149,7 @@ func (kv *Rkv) Put(key string, value interface{}) error {
 	return kv.keydir.writeTo(kv.activeFile, key, bytes, 0)
 }
 
-// PutExpire save the key-value pair in the current file with expiration in future date.
+// PutForDays save the key-value pair in the current file with expiration in future date.
 // Checking for expiration happens on database load, so only when database is
 // reopen records become expired.
 func (kv *Rkv) PutForDays(key string, value interface{}, days int32) error {
