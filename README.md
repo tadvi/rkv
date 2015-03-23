@@ -83,7 +83,35 @@ This simply exports database
 
 $ rkv test.kv < test.json
 
-Imports exported database
+Imports previously exported database
+
+## Keys and values
+
+Keys are strings. You can use numbers too by simply converting them into strings
+before you do Put. 
+
+Internally values are stored as JSON. So you can store your structs.
+
+Fetch number of keys at once by using GetKeys(with, limit) and then iterate over 
+them and use Get to get actual values like this:
+
+    // open database
+    kv, err := rkv.New("test.kv")
+    if err != nil {
+        log.Fatal("Can not open database file")
+    }
+    defer kv.Close()
+
+    // get all keys from database - only do this on very small databases!
+    arr := kv.GetKeys("", -1)	
+
+    for _, key := range arr {
+	    v := Mytype{}
+        err := kv.Get(key, &v)
+        if err != nil {
+            log.Fatal("Error while iterating %q", err.Error())
+        }
+    }
 
 ## TODO
 
