@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/json"
+    "encoding/csv"
 	"errors"
 	"fmt"
 	"hash/crc32"
@@ -12,6 +13,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+    "strconv"
 	"time"
 )
 
@@ -29,6 +31,7 @@ const (
 var (
 	ErrBlankKey    = errors.New("rkv: key can not be blank")
 	ErrKeyNotFound = errors.New("rkv: key not found")
+    ErrInvalidKeyIndex = errors.New("rkv: key index is greater than number of fields")
 )
 
 // Main structure for any Rkv file.
@@ -228,7 +231,8 @@ func (kv *Rkv) DeleteAllKeys(with string) error {
 	return nil
 }
 
-// Iterator returns iterator object (channel), do not use in more than one goroutine.
+// Iterator returns iterator object (channel) of key values,
+// do not use in more than one goroutine.
 func (kv *Rkv) Iterator(with string) <-chan string {
 	kv.isReady()
 	iter := make(chan string, 1)
@@ -364,6 +368,74 @@ func (kv *Rkv) ImportJSON(r io.Reader) error {
 		kv.Put(key, val)
 	}
 	return nil
+}
+
+
+// ImportCSV import CSV files with first row as field names.
+func (kv *Rkv) ImportCSV(r io.Reader, key int) error {
+    out := map[string]interface{}{}
+    index := map[int]string{}
+    isstr := map[int]bool{}
+
+    // first iterate over all the rows and determine if it is
+    // string or number and only after that load into database.
+    // TODO: not efficient, fix it.
+    rd := csv.NewReader(r)
+    arr, err := rd.ReadAll()
+    if err != nil {
+        return err
+    }
+
+    for row, rec := range arr {
+        if row == 0 {
+            continue  // this is header
+        }
+        if len(rec) == len(isstr) {
+            break   // all the values are strings, no need to loop more
+        }
+        for i, field := range rec {
+            if isstr[i] {
+                continue
+            }
+            if _, err := strconv.ParseFloat(field, 64); err != nil {
+                isstr[i] = true
+            }
+        }
+    }
+
+    for row, rec := range arr {
+        if key > len(rec) - 1 {
+            return ErrInvalidKeyIndex
+        }
+
+        var keyval = ""
+        for i, field := range rec {
+            if row == 0 { // header column
+                out[field] = nil
+                index[i] = field
+            } else {
+                if key == i {
+                    keyval = field
+                }
+                if isstr[i] == false {
+                    fl, err := strconv.ParseFloat(field, 64)
+                    if err != nil {
+                        return err
+                    }
+                    out[index[i]] = fl
+                } else {
+                    out[index[i]] = field
+                }
+            }
+        }
+        if row == 0 {
+            continue  // this is header
+        }
+
+        fmt.Println(keyval, out)
+        kv.Put(keyval, out)
+    }
+    return nil
 }
 
 // ------ unexported useful funcs ------

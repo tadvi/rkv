@@ -15,7 +15,8 @@ var usage = `
   Use redirection < or > to move JSON files in or out.
 
   Example: $ rkv -c test.kv > test.json
-  This will compact database and output to test.json   
+
+  This will compact database and output to test.json.   
 
 `
 
@@ -60,8 +61,7 @@ func main() {
 
 	stat, err := os.Stdout.Stat()
 	if err == nil && (stat.Mode()&os.ModeCharDevice) == 0 {
-		err = kv.ExportJSON(os.Stdout)
-		if err != nil {
+		if err = kv.ExportJSON(os.Stdout); err != nil {
 			log.Fatal(err)
 		}
 	}
@@ -69,8 +69,7 @@ func main() {
 	stat, err = os.Stdin.Stat()
 	if err == nil && (stat.Mode()&os.ModeCharDevice) == 0 {
 		//fmt.Println("data is being piped to stdin")
-		err = kv.ImportJSON(os.Stdin)
-		if err != nil {
+		if err = kv.ImportJSON(os.Stdin); err != nil {
 			log.Fatal(err)
 		}
 	}

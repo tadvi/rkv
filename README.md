@@ -79,11 +79,26 @@ This will compact database and export to JSON.
 
 $ rkv test.kv > test.json 
 
-This simply exports database
+This simply exports database.
 
 $ rkv test.kv < test.json
 
-Imports previously exported database
+Imports previously exported database.
+
+## Use rkvcsv tool
+
+Use rkvcsv tool to import CSV files. If all the values are numbers
+then it is stored as number inside KV. Otherwise it is a string.
+
+Basic usage:
+
+$ rkvcsv -key 0 test.kv < test.csv
+
+Import CSV file and take first field to be a key inside KV database.
+
+$ rkvcsv -key 2 test.kv < test.csv
+
+Import CSV file and take third field from CSV to be a key inside KV database.
 
 ## Keys and values
 
