@@ -87,8 +87,17 @@ Imports previously exported database.
 
 ## Use rkvcsv tool
 
-Use rkvcsv tool to import CSV files. If all the values are numbers
-then it is stored as number inside KV. Otherwise it is a string.
+Basic utility to bring data from relational databases into Rkv.
+Export your data into CSV then load it into Rkv using this tool.
+
+First row of CSV must have field names.
+
+rkvcsv tool imports CSV files. If all the column's values are numbers
+then that column is stored as number inside KV. Otherwise it is a string.
+
+Since Rkv is KV datastore you should specify key field that will be used
+to find record using Get or similar methods. If you do not specify what field
+in CSV should become record key field inside Rkv then first field is used as key.
 
 Basic usage:
 
